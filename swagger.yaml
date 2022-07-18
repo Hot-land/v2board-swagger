@@ -173,6 +173,17 @@ paths:
           schema:
             $ref: "#/definitions/SendEmailVerifyResponse"
   
+  /guest/plan/fetch:
+    get:
+      tags:
+      - guest
+      summary: 获取可以公开显示的订阅列表
+      responses:
+        200:
+          description: 成功获取可以公开显示的订阅列表
+          schema:
+            $ref: "#/definitions/FetchGuestPlanResponse"
+
   /guest/common/config:
     get:
       tags:
@@ -292,3 +303,77 @@ definitions:
       data:
         type: boolean
         description: 是否成功
+  FetchGuestPlanResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Plan"
+  Plan:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: plan id
+      group_id:
+        type: integer
+        description: group id
+      transfer_enable:
+        type: integer
+        description: 1,
+      name:
+        type: string
+        description: 订阅的名字
+      show:
+        type: integer
+        description: 是否显示，1的话显示
+      sort:
+        type: integer
+        description: 显示顺序
+      renew:
+        type: integer
+        description: 是否可以重置，0表示否
+      content:
+        type: string
+        description: 订阅的描述，可以是html格式
+      month_price:
+        type: integer
+        description: 月费价格，如果不支持月费则为null
+      quarter_price:
+        type: integer
+        description: 季费价格，如果不支持季费则为null
+      half_year_price:
+        type: integer
+        description: 半年价格，如果不支持半年的订阅则为null
+      year_price:
+        type: integer
+        description: 年费价格，如果不支持年费的订阅则为null
+      two_year_price:
+        type: integer
+        description: 两年的价格，如果不支持两年的订阅则为null
+      three_year_price:
+        type: integer
+        description: 三年的价格，如果不支持三年的订阅则为null
+      onetime_price:
+        type: integer
+        description: 一次性付款价格，如果不支持一次性付款则为null
+      reset_price:
+        type: integer
+        description: 重置价格，如果不支持重置则为null
+      reset_traffic_method:
+        type: integer
+        enum: [0, 1, 2, 3, 4]
+        description: >
+          * 0 - 每个月的第一天重置
+          * 1 - 每个月重置
+          * 2 - 不重置
+          * 3 - 每年的第一天重置
+          * 4 - 每年重置
+      created_at:
+        type: integer
+        description: 创建时间
+      updated_at:
+        type: integer
+        description: 更新时间
+        
