@@ -119,6 +119,11 @@ paths:
         type: string
         description: 新密码
         required: true
+      responses:
+        200: 
+          description: 成功重置密码
+        500:
+          description: 重置密码失败
   
   /passport/auth/getTempToken:
     post:
@@ -146,7 +151,24 @@ paths:
     post:
       tags:
       - passport
-
+      summary: 给指定邮箱发送验证邮件
+      parameters:
+      - in: formData
+        name: email
+        type: string
+        description: 电子邮件地址
+        required: true
+        format: email
+      - in: formData
+        name: recaptcha_data
+        type: string
+        description: reCAPTCHA密钥，如果服务端开启了reCAPTCHA的话则必须
+        required: false
+      responses:
+        200:
+          description: 成功发送验证码
+          schema:
+            $ref: "#/definitions/SendEmailVerifyResponse"
   
 securityDefinitions:
   api_key:
@@ -217,8 +239,9 @@ definitions:
           appUrl:
             type: string
             description: 站点URL
-          
-
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+  SendEmailVerifyResponse:
+    type: object
+    properties:
+      data:
+        type: boolean
+        description: 是否成功
