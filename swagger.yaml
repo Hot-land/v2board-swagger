@@ -13,12 +13,14 @@ info:
 host: "v2board.com"
 basePath: "/api/v1"
 tags:
-- name: "client"
-  description: "客户端专用的API，使用client中间件"
-- name: "guest"
-  description: "游客用API"
-- name: "passport"
-  description: "认证相关的API"
+- name: client
+  description: 客户端专用的API，使用client中间件
+- name: guest
+  description: 游客用API
+- name: passport
+  description: 认证相关的API
+- name: user
+  description: 用户相关API
 schemes:
 - "https"
 - "http"
@@ -145,7 +147,8 @@ paths:
         200:
           description: 成功获取站点的配置
           schema:
-            $ref: "#/definitions/GetCommonConfigResponse"
+            $ref: "#/definitions/LegacyGetCommonConfigResponse"
+      deprecated: true
         
   /passport/common/sendEmailVerify:
     post:
@@ -170,6 +173,17 @@ paths:
           schema:
             $ref: "#/definitions/SendEmailVerifyResponse"
   
+  /guest/common/config:
+    get:
+      tags:
+      - guest
+      summary: 获取站点配置，在服务端版本v1.5.5之后推荐使用这个API
+      responses:
+        200:
+          description: 成功获取站点的配置
+          schema:
+            $ref: "#/definitions/GetCommonConfigResponse"
+
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -213,6 +227,39 @@ definitions:
         type: string
         description: token
   GetCommonConfigResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          tos_url:
+            type: string
+            description: 服务条款URL
+          is_email_verify:
+            type: integer
+            description: 是否开启邮箱验证，0 表示 false
+          is_invite_force:
+            type: integer
+            description: 是否开启强制邀请，0 表示 false
+          email_whitelist_suffix:
+            type: array
+            description: 邮箱后缀名白名单，例如["gmail.com","qq.com","163.com"]
+          is_recaptcha:
+            type: integer
+            description: 是否开启reCAPTCHA，0 表示 false
+          recaptcha_site_key:
+            type: string
+            description: reCAPTCHA密钥
+          app_description:
+            type: string 
+            description: 站点描述
+          app_url:
+            type: string
+            description: 站点URL
+          logo:
+            type: string
+            description: 站点logo的URL
+  LegacyGetCommonConfigResponse:
     type: object
     properties:
       data:
