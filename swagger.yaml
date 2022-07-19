@@ -195,6 +195,42 @@ paths:
           schema:
             $ref: "#/definitions/GetCommonConfigResponse"
 
+  /client/subscribe:
+    get:
+      tags:
+      - client
+      summary: 获取订阅地址
+      parameters:
+      - in: query
+        name: flag
+        type: string
+        required: false
+        description: 客户端标记，以便得知是从哪个客户端订阅
+      responses:
+        200:
+          description: base64String
+
+  /client/app/getConfig:
+    get:
+      tags:
+      - client
+      summary: 获取APP的clash设置
+      responses:
+        200:
+          description: clash的yaml设置
+
+  /client/app/getVersion:
+    get:
+      tags:
+      - client
+      summary: 获取App版本
+      responses:
+        200:
+          description: 获取各版本描述
+          schema:
+            $ref: "#/definitions/GetAppVersionResponse"
+
+
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -376,4 +412,27 @@ definitions:
       updated_at:
         type: integer
         description: 更新时间
-        
+  GetAppVersionResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          windows_version:
+            type: string
+            description: windows的版本号
+          windows_download_url:
+            type: string
+            description: windows版本的下载地址
+          macos_version:
+            type: string
+            description: macos的版本号
+          macos_download_url:
+            type: string
+            description: macos版本的下载地址
+          android_version:
+            type: string
+            description: android的版本号
+          android_download_url:
+            type: string
+            description: android版本的下载地址
