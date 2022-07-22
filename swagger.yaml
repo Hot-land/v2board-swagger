@@ -369,7 +369,7 @@ definitions:
         description: 显示顺序
       renew:
         type: integer
-        description: 是否可以重置，0表示否
+        description: 是否可以续费，0表示否
       content:
         type: string
         description: 订阅的描述，可以是html格式
@@ -396,7 +396,7 @@ definitions:
         description: 一次性付款价格，如果不支持一次性付款则为null
       reset_price:
         type: integer
-        description: 重置价格，如果不支持重置则为null
+        description: 重置流量包价格，如果不支持重置流量包则为null
       reset_traffic_method:
         type: integer
         enum: [0, 1, 2, 3, 4]
