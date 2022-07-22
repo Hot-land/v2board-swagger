@@ -21,6 +21,8 @@ tags:
   description: 认证相关的API
 - name: user
   description: 用户相关API
+- name: order
+  description: 订单相关API
 schemes:
 - "https"
 - "http"
@@ -230,6 +232,141 @@ paths:
           schema:
             $ref: "#/definitions/GetAppVersionResponse"
 
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: 用户登出
+      responses:
+        200:
+          description: 成功登出
+          schema:
+            $ref: "#/definitions/UserLogoutResponse"
+  
+  /user/info:
+    get:
+      tags:
+      - user
+      summary: 获取用户信息
+      responses:
+        200:
+          description: 成功获取用户信息
+          schema:
+            $ref: "#/definitions/GetUserInfoResponse"
+        500:
+          description: 没有找到用户
+
+  /user/getSubscribe:
+    get:
+      tags:
+      - user
+      summary: 获取用户订阅
+      responses:
+        200:
+          description: 成功获取用户订阅
+          schema:
+            $ref: "#/definitions/GetUserSubscribeResponse"
+        500:
+          description: 用户不存在，订阅计划不存在
+
+  /order/save:
+    post:
+      tags:
+      - order
+      - user
+      summary: 生成订单
+      parameters:
+      - in: formData
+        name: plan_id
+        type: integer
+        description: 订阅计划ID
+        required: true
+      - in: formData
+        name: period
+        type: string
+        description: 订阅周期类型
+        required: true
+      - in: formData
+        name: coupon_code
+        type: string
+        description: 优惠券
+        required: false
+      responses:
+        200:
+          description: 成功生成订单
+          schema:
+            $ref: "#/definitions/OrderSaveResponse"
+        500:
+          description: >
+            1. 有尚未支付的订单
+            2. 订阅计划不存在
+            3. 订阅周期类型不对
+            4. 当用户选择订阅周期为重置流量的情况下，订阅过期或者未激活时会报错
+            5. 当用户选择订阅周期为重置流量的情况下，订阅计划ID不对
+            6. 订阅计划售罄
+            7. 订阅无法续费
+            8. 订阅计划下架
+            9. 当用户提供了优惠券，优惠券不存在时报错
+            10. 创建订单失败
+  
+  /order/checkout:
+    post:
+      tags:
+      - order
+      - user
+      summary: 下单
+      parameters:
+      - in: formData
+        name: trade_no
+        type: string
+        description: 订单号
+        required: true
+      - in: formData
+        name: method
+        type: integer
+        description: 支付方法
+        required: true
+      responses:
+        200:
+          description: 成功下单
+          schema:
+            $ref: "#/definitions/OrderCheckoutResponse"
+        500:
+          description: >
+            1. 订单不存在
+            2. 订单更新失败（数据库）
+    
+  /order/check:
+    get:
+      tags:
+      - order
+      - user
+      summary: 检查订单状态
+      parameters:
+      - in: query
+        name: trade_no
+        type: string
+        description: 订单号
+        required: true
+      responses:
+        200:
+          description: 成功获取订单状态
+          schema:
+            $ref: "#/definitions/GetOrderCheckResponse"
+        500:
+          description: 订单不存在
+
+  /order/getPaymentMethod:
+    get:
+      tags:
+      - order
+      - user
+      summary: 获取支付方式
+      responses:
+        200:
+          description: 成功获取支付方式列表
+          schema:
+            $ref: "#/definitions/GetPaymentMethodResponse"
 
 securityDefinitions:
   api_key:
@@ -243,6 +380,7 @@ securityDefinitions:
     scopes:
       read:pets: "read your pets"
       write:pets: "modify pets in your account"
+
 definitions:
   RegisterResponse:
     type: object
@@ -255,6 +393,7 @@ definitions:
           auth_data:
             type: string
             description: base64编码
+ 
   AuthCheckResponse:
     type: object
     properties:
@@ -267,12 +406,14 @@ definitions:
           is_admin:
             type: boolean
             description: 是否管理员
+  
   GetTempTokenResponse:
     type: object
     properties:
       data: 
         type: string
         description: token
+  
   GetCommonConfigResponse:
     type: object
     properties:
@@ -306,6 +447,7 @@ definitions:
           logo:
             type: string
             description: 站点logo的URL
+  
   LegacyGetCommonConfigResponse:
     type: object
     properties:
@@ -333,12 +475,14 @@ definitions:
           appUrl:
             type: string
             description: 站点URL
+  
   SendEmailVerifyResponse:
     type: object
     properties:
       data:
         type: boolean
         description: 是否成功
+  
   FetchGuestPlanResponse:
     type: object
     properties:
@@ -346,6 +490,90 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Plan"
+  
+  GetAppVersionResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          windows_version:
+            type: string
+            description: windows的版本号
+          windows_download_url:
+            type: string
+            description: windows版本的下载地址
+          macos_version:
+            type: string
+            description: macos的版本号
+          macos_download_url:
+            type: string
+            description: macos版本的下载地址
+          android_version:
+            type: string
+            description: android的版本号
+          android_download_url:
+            type: string
+            description: android版本的下载地址
+  
+  UserLogoutResponse:
+    type: object
+    properties:
+      data:
+        type: boolean
+        description: 成功与否
+  
+  GetUserInfoResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        $ref: "#/definitions/UserInfo"
+  
+  GetUserSubscribeResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        $ref: "#/definitions/UserSubscribe"
+
+  OrderSaveResponse:
+    type: object
+    properties:
+      data: 
+        type: string
+        description: 订单号
+
+  OrderCheckoutResponse:
+    type: object
+    properties:
+      data: 
+        type: object
+        properties:
+          type: 
+            type: integer
+            description: 订单类型
+          data:
+            type: object
+            description: >
+              1. 当type为-1的时候，data为 true
+              2. 当type为其他的时候，data为 map
+   
+  GetOrderCheckResponse:
+    type: object
+    properties:
+      data:
+        type: integer
+        description: 订单状态
+
+  GetPaymentMethodResponse:
+    type: object
+    properties: 
+      data: 
+        type: array
+        items:
+          $ref: "#/definitions/PaymentMethod"
+
   Plan:
     type: object
     properties:
@@ -412,27 +640,99 @@ definitions:
       updated_at:
         type: integer
         description: 更新时间
-  GetAppVersionResponse:
+
+  UserInfo:
     type: object
     properties:
-      data:
-        type: object
-        properties:
-          windows_version:
-            type: string
-            description: windows的版本号
-          windows_download_url:
-            type: string
-            description: windows版本的下载地址
-          macos_version:
-            type: string
-            description: macos的版本号
-          macos_download_url:
-            type: string
-            description: macos版本的下载地址
-          android_version:
-            type: string
-            description: android的版本号
-          android_download_url:
-            type: string
-            description: android版本的下载地址
+      email:
+        type: string
+        description: 电子邮件
+      transfer_enable:
+        type: integer
+        description: 流量
+      last_login_at:
+        type: integer
+        description: 最近一次登录的时间
+      created_at:
+        type: integer
+        description: 用户创建时间
+      banned:
+        type: integer
+        description: 是否被屏蔽
+      remind_expire:
+        type: integer
+        description: 到期邮件提醒
+      remind_traffic:
+        type: integer
+        description: 流量邮件提醒
+      expired_at:
+        type: integer
+        description: 过期时间
+      balance:
+        type: integer
+        description: 余额
+      commission_balance:
+        type: integer
+        description: 佣金
+      plan_id:
+        type: integer
+        description: 订阅计划ID
+      discount:
+        type: integer
+        description: 折扣
+      commission_rate:
+        type: number
+        description: 佣金比例
+      telegram_id:
+        type: string
+        description: telegram_id 
+      uuid:
+        type: string
+        description: uuid
+      avatar_url:
+        type: string
+        description: 头像的URL
+
+  UserSubscribe:
+    type: object
+    properties:
+      plan_id:
+        type: integer
+        description: 订阅计划ID
+      token:
+        type: string
+        description: token
+      expired_at:
+        type: integer
+        description: 过期时间
+      u:
+        type: integer
+        description: 上行流量
+      d:
+        type: integer
+        description: 下行流量
+      transfer_enable:
+        type: integer
+        description: 流量
+      email:
+        type: string
+        description: 电子邮件
+      subscribe_url:
+        type: string
+        description: 订阅地址
+
+  PaymentMethod:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 支付方式的ID
+      name:
+        type: string
+        description: 支付方式名称
+      payment:
+        type: string
+        description: 支付方式
+      icon:
+        type: string
+        description: 支付ICON的URL（可以是绝对地址或者相对地址）
