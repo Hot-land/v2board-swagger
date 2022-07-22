@@ -273,7 +273,6 @@ paths:
     post:
       tags:
       - order
-      - user
       summary: 生成订单
       parameters:
       - in: formData
@@ -313,7 +312,6 @@ paths:
     post:
       tags:
       - order
-      - user
       summary: 下单
       parameters:
       - in: formData
@@ -340,7 +338,6 @@ paths:
     get:
       tags:
       - order
-      - user
       summary: 检查订单状态
       parameters:
       - in: query
@@ -360,7 +357,6 @@ paths:
     get:
       tags:
       - order
-      - user
       summary: 获取支付方式
       responses:
         200:
