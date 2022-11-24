@@ -181,6 +181,7 @@ paths:
     get:
       tags:
       - guest
+      - plan
       summary: 获取可以公开显示的订阅列表
       responses:
         200:
@@ -365,6 +366,25 @@ paths:
           description: 成功获取支付方式列表
           schema:
             $ref: "#/definitions/GetPaymentMethodResponse"
+
+  /user/plan/fetch:
+    get:
+      tags:
+      - user
+      - plan
+      summary:
+        获取订阅详细
+      parameters:
+      - in: query
+        name: id
+        type: string
+        description: 订阅号
+        required: true
+      responses:
+        200:
+          description: 成功获取订阅详情
+          schema:
+            $ref: "#/definitions/GetPlanResponse"
 
 securityDefinitions:
   api_key:
@@ -571,6 +591,13 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/PaymentMethod"
+
+  GetPlanResponse:
+    type: object
+    properties:
+      data: 
+        type: object
+        $ref: "#/definitions/Plan"
 
   Plan:
     type: object
