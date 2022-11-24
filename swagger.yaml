@@ -23,6 +23,8 @@ tags:
   description: 用户相关API
 - name: order
   description: 订单相关API
+- name: plan
+  description: 订阅相关API
 schemes:
 - "https"
 - "http"
