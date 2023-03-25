@@ -272,7 +272,7 @@ paths:
         500:
           description: 用户不存在，订阅计划不存在
 
-  /order/save:
+  /user/order/save:
     post:
       tags:
       - order
@@ -311,7 +311,7 @@ paths:
             9. 当用户提供了优惠券，优惠券不存在时报错
             10. 创建订单失败
   
-  /order/checkout:
+  /user/order/checkout:
     post:
       tags:
       - order
@@ -337,7 +337,7 @@ paths:
             1. 订单不存在
             2. 订单更新失败（数据库）
     
-  /order/check:
+  /user/order/check:
     get:
       tags:
       - order
@@ -356,7 +356,7 @@ paths:
         500:
           description: 订单不存在
 
-  /order/getPaymentMethod:
+  /user/order/getPaymentMethod:
     get:
       tags:
       - order
